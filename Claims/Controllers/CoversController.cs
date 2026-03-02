@@ -1,6 +1,6 @@
+using Claims.Application.Abstractions;
 using Claims.Auditing;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Claims.Controllers;
 
@@ -8,58 +8,56 @@ namespace Claims.Controllers;
 [Route("[controller]")]
 public class CoversController : ControllerBase
 {
-    private readonly ClaimsContext _claimsContext;
+    private readonly ICoverRepository _coverRepository;
     private readonly ILogger<CoversController> _logger;
     private readonly Auditer _auditer;
 
-    public CoversController(ClaimsContext claimsContext, AuditContext auditContext, ILogger<CoversController> logger)
+    public CoversController(
+        ICoverRepository coverRepository,
+        AuditContext auditContext,
+        ILogger<CoversController> logger)
     {
-        _claimsContext = claimsContext;
+        _coverRepository = coverRepository;
         _logger = logger;
         _auditer = new Auditer(auditContext);
     }
 
     [HttpPost("compute")]
-    public async Task<ActionResult> ComputePremiumAsync(DateTime startDate, DateTime endDate, CoverType coverType)
+    public ActionResult ComputePremiumAsync(DateTime startDate, DateTime endDate, CoverType coverType)
     {
         return Ok(ComputePremium(startDate, endDate, coverType));
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Cover>>> GetAsync()
+    public async Task<ActionResult<IReadOnlyList<Cover>>> GetAsync(CancellationToken cancellationToken)
     {
-        var results = await _claimsContext.Covers.ToListAsync();
-        return Ok(results);
+        var covers = await _coverRepository.GetAllAsync(cancellationToken);
+        return Ok(covers);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Cover>> GetAsync(string id)
+    public async Task<ActionResult<Cover>> GetAsync(string id, CancellationToken cancellationToken)
     {
-        var results = await _claimsContext.Covers.ToListAsync();
-        return Ok(results.SingleOrDefault(cover => cover.Id == id));
+        var cover = await _coverRepository.GetByIdAsync(id, cancellationToken);
+        return cover is null ? NotFound() : Ok(cover);
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateAsync(Cover cover)
+    public async Task<ActionResult<Cover>> CreateAsync(Cover cover, CancellationToken cancellationToken)
     {
         cover.Id = Guid.NewGuid().ToString();
         cover.Premium = ComputePremium(cover.StartDate, cover.EndDate, cover.Type);
-        _claimsContext.Covers.Add(cover);
-        await _claimsContext.SaveChangesAsync();
+        await _coverRepository.CreateAsync(cover, cancellationToken);
         _auditer.AuditCover(cover.Id, "POST");
         return Ok(cover);
     }
 
     [HttpDelete("{id}")]
-    public async Task DeleteAsync(string id)
+    public async Task<IActionResult> DeleteAsync(string id, CancellationToken cancellationToken)
     {
         _auditer.AuditCover(id, "DELETE");
-        var cover = await _claimsContext.Covers.Where(cover => cover.Id == id).SingleOrDefaultAsync();
-        if (cover is not null)
-        {
-            _claimsContext.Covers.Remove(cover);
-            await _claimsContext.SaveChangesAsync();
-        }
+        var deleted = await _coverRepository.DeleteAsync(id, cancellationToken);
+        return deleted ? NoContent() : NotFound();
     }
 
     private decimal ComputePremium(DateTime startDate, DateTime endDate, CoverType coverType)

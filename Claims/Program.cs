@@ -7,6 +7,9 @@ using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using Testcontainers.MongoDb;
 using Testcontainers.MsSql;
+using Claims.Application.Services;
+using Claims.Application.Validation;
+using Claims.Domain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +44,11 @@ builder.Services.AddDbContext<ClaimsContext>(options =>
     var database = client.GetDatabase(builder.Configuration["MongoDb:DatabaseName"]);
     options.UseMongoDB(database.Client, database.DatabaseNamespace.DatabaseName);
 });
-
+builder.Services.AddScoped<IClaimValidator, ClaimValidator>();
+builder.Services.AddScoped<ICoverValidator, CoverValidator>();
+builder.Services.AddScoped<IPremiumCalculator, PremiumCalculator>();
+builder.Services.AddScoped<IClaimService, ClaimService>();
+builder.Services.AddScoped<ICoverService, CoverService>();
 builder.Services.AddScoped<IClaimRepository, ClaimRepository>();
 builder.Services.AddScoped<ICoverRepository, CoverRepository>();
 

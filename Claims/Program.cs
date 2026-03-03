@@ -11,6 +11,7 @@ using Claims.Application.Services;
 using Claims.Application.Validation;
 using Claims.Domain.Abstractions;
 using Claims.Domain.Services;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +38,9 @@ builder.Services
     });
 
 builder.Services.AddDbContext<AuditContext>(options =>
-    options.UseSqlServer(sqlContainer.GetConnectionString()));
+    options
+        .UseSqlServer(sqlContainer.GetConnectionString())
+        .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
 
 builder.Services.AddDbContext<ClaimsContext>(options =>
 {

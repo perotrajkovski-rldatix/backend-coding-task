@@ -9,7 +9,7 @@ public class AuditService : IAuditService
         _auditQueue = auditQueue;
     }
 
-    public ValueTask AuditClaimAsync(string claimId, string httpRequestType, CancellationToken cancellationToken = default)
+    public ValueTask AuditClaimAsync(string claimId, string httpRequestType)
     {
         var message = new AuditMessage(
             AuditEntityType.Claim,
@@ -17,10 +17,10 @@ public class AuditService : IAuditService
             httpRequestType,
             DateTime.UtcNow);
 
-        return _auditQueue.EnqueueAsync(message, cancellationToken);
+        return _auditQueue.EnqueueAsync(message);
     }
 
-    public ValueTask AuditCoverAsync(string coverId, string httpRequestType, CancellationToken cancellationToken = default)
+    public ValueTask AuditCoverAsync(string coverId, string httpRequestType)
     {
         var message = new AuditMessage(
             AuditEntityType.Cover,
@@ -28,6 +28,6 @@ public class AuditService : IAuditService
             httpRequestType,
             DateTime.UtcNow);
 
-        return _auditQueue.EnqueueAsync(message, cancellationToken);
+        return _auditQueue.EnqueueAsync(message);
     }
 }

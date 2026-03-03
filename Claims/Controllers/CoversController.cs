@@ -46,7 +46,7 @@ public class CoversController : ControllerBase
             return BadRequest(result.Errors);
         }
 
-        await _auditService.AuditCoverAsync(result.Value!.Id, "POST", cancellationToken);
+        await _auditService.AuditCoverAsync(result.Value!.Id, "POST");
         return Ok(result.Value);
     }
 
@@ -59,7 +59,7 @@ public class CoversController : ControllerBase
             return NotFound();
         }
 
-        await _auditService.AuditCoverAsync(id, "DELETE", cancellationToken);
+        await _auditService.AuditCoverAsync(id, "DELETE");
         return NoContent();
     }
 }

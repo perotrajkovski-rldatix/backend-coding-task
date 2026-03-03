@@ -40,7 +40,7 @@ namespace Claims.Controllers
                 return BadRequest(result.Errors);
             }
 
-            await _auditService.AuditClaimAsync(result.Value!.Id, "POST", cancellationToken);
+            await _auditService.AuditClaimAsync(result.Value!.Id, "POST");
             return Ok(result.Value);
         }
 
@@ -53,7 +53,7 @@ namespace Claims.Controllers
                 return NotFound();
             }
 
-            await _auditService.AuditClaimAsync(id, "DELETE", cancellationToken);
+            await _auditService.AuditClaimAsync(id, "DELETE");
             return NoContent();
         }
     }

@@ -14,9 +14,9 @@ namespace Claims.Auditing
             });
         }
 
-        public async ValueTask EnqueueAsync(AuditMessage message, CancellationToken cancellationToken = default)
+        public async ValueTask EnqueueAsync(AuditMessage message)
         {
-            await _channel.Writer.WriteAsync(message, cancellationToken);
+            await _channel.Writer.WriteAsync(message);
         }
 
         public IAsyncEnumerable<AuditMessage> DequeueAllAsync(CancellationToken cancellationToken = default)

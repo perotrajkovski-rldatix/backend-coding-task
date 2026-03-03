@@ -2,6 +2,6 @@ namespace Claims.Auditing;
 
 public interface IAuditQueue
 {
-    ValueTask EnqueueAsync(AuditMessage message, CancellationToken cancellationToken = default);
+    ValueTask EnqueueAsync(AuditMessage message);
     IAsyncEnumerable<AuditMessage> DequeueAllAsync(CancellationToken cancellationToken = default);
 }

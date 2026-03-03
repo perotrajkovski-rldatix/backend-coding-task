@@ -1,6 +1,4 @@
-﻿using Docker.DotNet.Models;
-
-namespace Claims.Application.Common
+﻿namespace Claims.Application.Common
 {
     public sealed class ServiceResult<T>
     {
@@ -16,7 +14,7 @@ namespace Claims.Application.Common
             Errors = errors;
         }
         public static ServiceResult<T> Success(T value) => new ServiceResult<T>(true, false, value, Array.Empty<string>());
-        public static ServiceResult<T> Invalid(IEnumerable<string> errors) => new ServiceResult<T>(false, true, default, errors.ToArray());
-        public static ServiceResult<T> NotFound() => new ServiceResult<T>(false, false, default, Array.Empty<string>());
+        public static ServiceResult<T> Invalid(IEnumerable<string> errors) => new ServiceResult<T>(false, false, default, errors.ToArray());
+        public static ServiceResult<T> NotFound() => new ServiceResult<T>(false, true, default, Array.Empty<string>());
     }
 }

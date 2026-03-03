@@ -1,4 +1,4 @@
-using Claims.Application.Abstractions;
+using Claims.Domain.Abstractions;
 
 namespace Claims.Domain.Services;
 

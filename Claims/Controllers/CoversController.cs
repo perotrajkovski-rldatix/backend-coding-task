@@ -9,12 +9,12 @@ namespace Claims.Controllers;
 public class CoversController : ControllerBase
 {
     private readonly ICoverService _coverService;
-    private readonly Auditer _auditer;
+    private readonly IAuditService _auditService;
 
-    public CoversController(ICoverService coverService, AuditContext auditContext)
+    public CoversController(ICoverService coverService, IAuditService auditService)
     {
         _coverService = coverService;
-        _auditer = new Auditer(auditContext);
+        _auditService = auditService;
     }
 
     [HttpPost("compute")]
@@ -46,15 +46,20 @@ public class CoversController : ControllerBase
             return BadRequest(result.Errors);
         }
 
-        _auditer.AuditCover(result.Value!.Id, "POST");
+        await _auditService.AuditCoverAsync(result.Value!.Id, "POST", cancellationToken);
         return Ok(result.Value);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAsync(string id, CancellationToken cancellationToken)
     {
-        _auditer.AuditCover(id, "DELETE");
         var deleted = await _coverService.DeleteAsync(id, cancellationToken);
-        return deleted ? NoContent() : NotFound();
+        if (!deleted)
+        {
+            return NotFound();
+        }
+
+        await _auditService.AuditCoverAsync(id, "DELETE", cancellationToken);
+        return NoContent();
     }
 }

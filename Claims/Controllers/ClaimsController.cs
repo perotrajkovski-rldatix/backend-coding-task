@@ -9,12 +9,12 @@ namespace Claims.Controllers
     public class ClaimsController : ControllerBase
     {
         private readonly IClaimService _claimService;
-        private readonly Auditer _auditer;
+        private readonly IAuditService _auditService;
 
-        public ClaimsController(IClaimService claimService, AuditContext auditContext)
+        public ClaimsController(IClaimService claimService, IAuditService auditService)
         {
             _claimService = claimService;
-            _auditer = new Auditer(auditContext);
+            _auditService = auditService;
         }
 
         [HttpGet]
@@ -40,16 +40,21 @@ namespace Claims.Controllers
                 return BadRequest(result.Errors);
             }
 
-            _auditer.AuditClaim(result.Value!.Id, "POST");
+            await _auditService.AuditClaimAsync(result.Value!.Id, "POST", cancellationToken);
             return Ok(result.Value);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(string id, CancellationToken cancellationToken)
         {
-            _auditer.AuditClaim(id, "DELETE");
             var deleted = await _claimService.DeleteAsync(id, cancellationToken);
-            return deleted ? NoContent() : NotFound();
+            if (!deleted)
+            {
+                return NotFound();
+            }
+
+            await _auditService.AuditClaimAsync(id, "DELETE", cancellationToken);
+            return NoContent();
         }
     }
 }

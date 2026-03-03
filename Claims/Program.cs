@@ -9,6 +9,7 @@ using Testcontainers.MongoDb;
 using Testcontainers.MsSql;
 using Claims.Application.Services;
 using Claims.Application.Validation;
+using Claims.Domain.Abstractions;
 using Claims.Domain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,6 +52,9 @@ builder.Services.AddScoped<IClaimService, ClaimService>();
 builder.Services.AddScoped<ICoverService, CoverService>();
 builder.Services.AddScoped<IClaimRepository, ClaimRepository>();
 builder.Services.AddScoped<ICoverRepository, CoverRepository>();
+builder.Services.AddSingleton<IAuditQueue, InMemoryAuditQueue>();
+builder.Services.AddScoped<IAuditService, AuditService>();
+builder.Services.AddHostedService<AuditBackgroundService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -1,5 +1,6 @@
 ﻿using Claims.Application.Abstractions;
 using Claims.Application.Common;
+using Claims.Domain.Abstractions;
 
 namespace Claims.Application.Services;
 

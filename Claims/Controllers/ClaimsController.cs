@@ -1,5 +1,7 @@
 using Claims.Application.Abstractions;
 using Claims.Auditing;
+using Claims.DTOs;
+using Claims.DTOs.Claims;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Claims.Controllers
@@ -18,22 +20,23 @@ namespace Claims.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<Claim>>> GetAsync(CancellationToken cancellationToken)
+        public async Task<ActionResult<IReadOnlyList<ClaimResponseDto>>> GetAsync(CancellationToken cancellationToken)
         {
             var claims = await _claimService.GetAllAsync(cancellationToken);
-            return Ok(claims);
+            return Ok(claims.Select(x => x.ToResponse()).ToList());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Claim>> GetAsync(string id, CancellationToken cancellationToken)
+        public async Task<ActionResult<ClaimResponseDto>> GetAsync(string id, CancellationToken cancellationToken)
         {
             var claim = await _claimService.GetByIdAsync(id, cancellationToken);
-            return claim is null ? NotFound() : Ok(claim);
+            return claim is null ? NotFound() : Ok(claim.ToResponse());
         }
 
         [HttpPost]
-        public async Task<ActionResult<Claim>> CreateAsync(Claim claim, CancellationToken cancellationToken)
+        public async Task<ActionResult<ClaimResponseDto>> CreateAsync(CreateClaimRequestDto request, CancellationToken cancellationToken)
         {
+            var claim = request.ToDomain();
             var result = await _claimService.CreateAsync(claim, cancellationToken);
             if (!result.IsSuccess)
             {
@@ -41,7 +44,7 @@ namespace Claims.Controllers
             }
 
             await _auditService.AuditClaimAsync(result.Value!.Id, "POST");
-            return Ok(result.Value);
+            return Ok(result.Value.ToResponse());
         }
 
         [HttpDelete("{id}")]

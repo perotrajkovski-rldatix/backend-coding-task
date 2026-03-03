@@ -1,5 +1,7 @@
 using Claims.Application.Abstractions;
 using Claims.Auditing;
+using Claims.DTOs;
+using Claims.DTOs.Covers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Claims.Controllers;
@@ -24,22 +26,23 @@ public class CoversController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<Cover>>> GetAsync(CancellationToken cancellationToken)
+    public async Task<ActionResult<IReadOnlyList<CoverResponseDto>>> GetAsync(CancellationToken cancellationToken)
     {
         var covers = await _coverService.GetAllAsync(cancellationToken);
-        return Ok(covers);
+        return Ok(covers.Select(x => x.ToResponse()).ToList());
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Cover>> GetAsync(string id, CancellationToken cancellationToken)
+    public async Task<ActionResult<CoverResponseDto>> GetAsync(string id, CancellationToken cancellationToken)
     {
         var cover = await _coverService.GetByIdAsync(id, cancellationToken);
-        return cover is null ? NotFound() : Ok(cover);
+        return cover is null ? NotFound() : Ok(cover.ToResponse());
     }
 
     [HttpPost]
-    public async Task<ActionResult<Cover>> CreateAsync(Cover cover, CancellationToken cancellationToken)
+    public async Task<ActionResult<CoverResponseDto>> CreateAsync(CreateCoverRequestDto request, CancellationToken cancellationToken)
     {
+        var cover = request.ToDomain();
         var result = await _coverService.CreateAsync(cover, cancellationToken);
         if (!result.IsSuccess)
         {
@@ -47,7 +50,7 @@ public class CoversController : ControllerBase
         }
 
         await _auditService.AuditCoverAsync(result.Value!.Id, "POST");
-        return Ok(result.Value);
+        return Ok(result.Value.ToResponse());
     }
 
     [HttpDelete("{id}")]

@@ -13,7 +13,7 @@ public class CoverServiceTests
         var repository = new FakeCoverRepository();
         var validator = new FakeCoverValidator(ValidationResult.Failure("invalid"));
         var premiumCalculator = new FakePremiumCalculator(777m);
-        var sut = new CoverService(repository, validator, premiumCalculator);
+        var sut = new CoverService(repository, validator, premiumCalculator, new FakeAuditService());
 
         var cover = new Cover
         {
@@ -35,7 +35,7 @@ public class CoverServiceTests
         var repository = new FakeCoverRepository();
         var validator = new FakeCoverValidator(ValidationResult.Success());
         var premiumCalculator = new FakePremiumCalculator(777m);
-        var sut = new CoverService(repository, validator, premiumCalculator);
+        var sut = new CoverService(repository, validator, premiumCalculator, new FakeAuditService());
 
         var cover = new Cover
         {

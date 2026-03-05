@@ -1,4 +1,4 @@
-﻿using Claims.Controllers;
+﻿    using Claims.Controllers;
 using Claims.DTOs.Claims;
 using Claims.Tests.Helper;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +21,7 @@ namespace Claims.Tests
                 DamageCost = 1200m
             };
 
-            var controller = new ClaimsController(new FakeClaimService([claim]), new FakeAuditService());
+            var controller = new ClaimsController(new FakeClaimService([claim]));
 
             var result = await controller.GetAsync(CancellationToken.None);
 

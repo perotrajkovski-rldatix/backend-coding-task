@@ -5,6 +5,8 @@ namespace Claims.Application.Validation;
 
 public class CoverValidator : ICoverValidator
 {
+    // Intentionally returns Task to keep parity with validator abstractions and
+    // support future async validation checks without API changes.
     public Task<ValidationResult> ValidateAsync(Cover cover, CancellationToken cancellationToken = default)
     {
         var errors = new List<string>();

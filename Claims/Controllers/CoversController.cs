@@ -1,5 +1,4 @@
 using Claims.Application.Abstractions;
-using Claims.Application.Abstractions.Auditing;
 using Claims.DTOs;
 using Claims.DTOs.Covers;
 using Microsoft.AspNetCore.Mvc;
@@ -11,12 +10,10 @@ namespace Claims.Controllers;
 public class CoversController : ControllerBase
 {
     private readonly ICoverService _coverService;
-    private readonly IAuditService _auditService;
 
-    public CoversController(ICoverService coverService, IAuditService auditService)
+    public CoversController(ICoverService coverService)
     {
         _coverService = coverService;
-        _auditService = auditService;
     }
 
     [HttpPost("compute")]
@@ -49,7 +46,6 @@ public class CoversController : ControllerBase
             return BadRequest(result.Errors);
         }
 
-        await _auditService.AuditCoverAsync(result.Value!.Id, "POST");
         return Ok(result.Value.ToResponse());
     }
 
@@ -62,7 +58,6 @@ public class CoversController : ControllerBase
             return NotFound();
         }
 
-        await _auditService.AuditCoverAsync(id, "DELETE");
         return NoContent();
     }
 }

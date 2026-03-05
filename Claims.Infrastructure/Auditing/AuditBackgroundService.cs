@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Claims.Application.Abstractions.Auditing;
 
-namespace Claims.Auditing;
+namespace Claims.Infrastructure.Auditing;
 
 public class AuditBackgroundService : BackgroundService
 {

@@ -1,4 +1,6 @@
-namespace Claims.Auditing;
+using Claims.Application.Abstractions.Auditing;
+
+namespace Claims.Infrastructure.Auditing;
 
 public class AuditService : IAuditService
 {

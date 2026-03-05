@@ -1,5 +1,5 @@
 using Claims.Application.Abstractions;
-using Claims.Auditing;
+using Claims.Application.Abstractions.Auditing;
 using Claims.DTOs;
 using Claims.DTOs.Covers;
 using Microsoft.AspNetCore.Mvc;

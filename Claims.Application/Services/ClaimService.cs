@@ -1,4 +1,5 @@
 ﻿using Claims.Application.Abstractions;
+using Claims.Application.Abstractions.Auditing;
 using Claims.Application.Common;
 
 namespace Claims.Application.Services
@@ -7,10 +8,16 @@ namespace Claims.Application.Services
     {
         private readonly IClaimRepository _claimRepository;
         private readonly IClaimValidator _claimValidator;
-        public ClaimService(IClaimRepository claimRepository, IClaimValidator claimValidator)
+        private readonly IAuditService _auditService;
+
+        public ClaimService(
+            IClaimRepository claimRepository,
+            IClaimValidator claimValidator,
+            IAuditService auditService)
         {
             _claimRepository = claimRepository;
             _claimValidator = claimValidator;
+            _auditService = auditService;
         }
         public async Task<IReadOnlyList<Claim>> GetAllAsync(CancellationToken cancellationToken = default)
         {
@@ -29,12 +36,19 @@ namespace Claims.Application.Services
             }
             claim.Id = Guid.NewGuid().ToString();
             await _claimRepository.CreateAsync(claim, cancellationToken);
+            await _auditService.AuditClaimAsync(claim.Id, "POST");
 
             return ServiceResult<Claim>.Success(claim);
         }
         public async Task<bool> DeleteAsync(string id, CancellationToken cancellationToken = default)
         {
-            return await _claimRepository.DeleteAsync(id, cancellationToken);
+            var deleted = await _claimRepository.DeleteAsync(id, cancellationToken);
+            if (deleted)
+            {
+                await _auditService.AuditClaimAsync(id, "DELETE");
+            }
+
+            return deleted;
         }
     }
 }

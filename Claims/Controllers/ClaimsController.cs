@@ -1,5 +1,4 @@
 using Claims.Application.Abstractions;
-using Claims.Application.Abstractions.Auditing;
 using Claims.DTOs;
 using Claims.DTOs.Claims;
 using Microsoft.AspNetCore.Mvc;
@@ -11,12 +10,10 @@ namespace Claims.Controllers
     public class ClaimsController : ControllerBase
     {
         private readonly IClaimService _claimService;
-        private readonly IAuditService _auditService;
 
-        public ClaimsController(IClaimService claimService, IAuditService auditService)
+        public ClaimsController(IClaimService claimService)
         {
             _claimService = claimService;
-            _auditService = auditService;
         }
 
         [HttpGet]
@@ -43,7 +40,6 @@ namespace Claims.Controllers
                 return BadRequest(result.Errors);
             }
 
-            await _auditService.AuditClaimAsync(result.Value!.Id, "POST");
             return Ok(result.Value.ToResponse());
         }
 
@@ -56,7 +52,6 @@ namespace Claims.Controllers
                 return NotFound();
             }
 
-            await _auditService.AuditClaimAsync(id, "DELETE");
             return NoContent();
         }
     }

@@ -12,7 +12,7 @@ public class ClaimServiceTests
     {
         var repository = new FakeClaimRepository();
         var validator = new FakeClaimValidator(ValidationResult.Failure("invalid"));
-        var sut = new ClaimService(repository, validator);
+        var sut = new ClaimService(repository, validator, new FakeAuditService());
 
         var claim = new Claim
         {
@@ -35,7 +35,7 @@ public class ClaimServiceTests
     {
         var repository = new FakeClaimRepository();
         var validator = new FakeClaimValidator(ValidationResult.Success());
-        var sut = new ClaimService(repository, validator);
+        var sut = new ClaimService(repository, validator, new FakeAuditService());
 
         var claim = new Claim
         {

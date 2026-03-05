@@ -1,5 +1,6 @@
 using Claims.Application.Abstractions;
-using Claims.Auditing;
+using Claims.Application.Abstractions.Auditing;
+using Claims.Infrastructure.Auditing;
 using Claims.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;

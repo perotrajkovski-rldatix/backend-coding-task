@@ -1,4 +1,4 @@
-namespace Claims.Auditing;
+namespace Claims.Application.Abstractions.Auditing;
 
 public interface IAuditQueue
 {

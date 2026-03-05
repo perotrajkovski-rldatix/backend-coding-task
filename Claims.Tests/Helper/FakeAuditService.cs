@@ -1,4 +1,4 @@
-using Claims.Auditing;
+using Claims.Application.Abstractions.Auditing;
 
 namespace Claims.Tests.Helper;
 

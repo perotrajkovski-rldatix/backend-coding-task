@@ -1,6 +1,7 @@
 ﻿using System.Threading.Channels;
+using Claims.Application.Abstractions.Auditing;
 
-namespace Claims.Auditing
+namespace Claims.Infrastructure.Auditing
 {
     public class InMemoryAuditQueue : IAuditQueue
     {
